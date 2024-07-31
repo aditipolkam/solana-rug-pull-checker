@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
-import { getTokenMetadata, getTokenAccountBalance, getAccountInfo } from '../helpers';
+import {
+  getTokenMetadata,
+  getTokenAccountBalance,
+  getAccountInfo,
+  getTokenSupply,
+  getTokenLargestAccounts,
+} from '../helpers';
 
 const checkRugPull = async (req: Request, res: Response) => {
   try {
@@ -9,6 +15,16 @@ const checkRugPull = async (req: Request, res: Response) => {
     const account = await getAccountInfo(address);
     // const tokenAccBalance = await getTokenAccountBalance('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 
+    const totalSupply = await getTokenSupply(address);
+    const largestAccounts = await getTokenLargestAccounts(address);
+    const totalTop10 = largestAccounts
+      // .slice(10)
+      .reduce((sum: number, holder: any) => sum + holder.uiAmount, 0);
+
+    const percentage = ((totalTop10 / totalSupply) * 100).toFixed(2);
+    console.log(`Total supply: ${totalSupply}`);
+    console.log(`Top 20 holders hold: ${totalTop10}`);
+    console.log(`which is ${percentage}% of the total supply`);
     return res.status(200).json({ metadata, account });
   } catch (error) {
     console.error(error);
