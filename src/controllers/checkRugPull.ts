@@ -5,6 +5,9 @@ import {
   getAccountInfo,
   getTokenSupply,
   getTokenLargestAccounts,
+  getDeployerAddress,
+  getLPMintAddress,
+  getRemainingLPTokens,
 } from '../helpers';
 
 const checkRugPull = async (req: Request, res: Response) => {
@@ -25,7 +28,13 @@ const checkRugPull = async (req: Request, res: Response) => {
     console.log(`Total supply: ${totalSupply}`);
     console.log(`Top 20 holders hold: ${totalTop10}`);
     console.log(`which is ${percentage}% of the total supply`);
-    return res.status(200).json({ metadata, account });
+
+    const deployerAddress = await getDeployerAddress(address);
+    const lpMintAddress = await getLPMintAddress(address);
+
+    const remainingLp = await getRemainingLPTokens(address);
+
+    return res.status(200).json({ metadata, account, deployerAddress, lpMintAddress, remainingLp });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Internal Server Error' });
