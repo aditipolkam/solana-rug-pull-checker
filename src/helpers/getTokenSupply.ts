@@ -5,7 +5,7 @@ async function getTokenSupply(mintAddress: string) {
   const result = await makeRequest('getTokenSupply', params);
   if (result && result.result) {
     const supply = result.result.value.uiAmount;
-    return supply;
+    return supply as number;
   }
   return null;
 }
