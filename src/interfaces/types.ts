@@ -11,3 +11,11 @@ export interface Token {
   mintAuthority: string | null;
   freezeAuthority: string | null;
 }
+
+export interface Risk {
+  name: string;
+  value: string;
+  description: string;
+  score: number;
+  level: 'low' | 'medium' | 'high' | 'danger';
+}

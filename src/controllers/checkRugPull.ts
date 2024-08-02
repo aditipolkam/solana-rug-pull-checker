@@ -12,6 +12,7 @@ import {
   getTokenDetails,
 } from '../helpers';
 import getLpDetails from '../utils/getLpDetails';
+import { Risk } from '../interfaces/types.js';
 
 interface Market {
   mint: {
@@ -94,13 +95,21 @@ const checkRugPull = async (req: Request, res: Response) => {
       reasons.push('All LP tokens are not burnt');
     }
 
+    lpDetails.risks.map((risk: Risk) => {
+      if (risk.level == 'danger') {
+        potentialRug = true;
+        riskScore += 10;
+        reasons.push(risk.name);
+      }
+    });
+
     //send final response
     return res.status(200).json({
       mint: address,
       tokenProgram: account.owner,
       deployer: deployerAddress,
       potentialRug,
-      riskScoreOutOf50: riskScore,
+      riskScore: riskScore,
       updatedAt: Date.now(),
       reasons,
       details: {
