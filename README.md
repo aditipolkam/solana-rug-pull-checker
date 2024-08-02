@@ -24,8 +24,8 @@ Deployed Link: `https://solana-rug-pull-checker.onrender.com/tokens/rugcheck/<to
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/aditipolkam/solana-rugpull-checker.git
-   cd solana-rugpull-checker
+   git clone https://github.com/aditipolkam/solana-rug-pull-checker.git
+   cd solana-rug-pull-checker
    ```
 
 2. Install dependencies:
