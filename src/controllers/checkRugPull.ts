@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import {
-  getTokenAccountBalance,
+  // getTokenAccountBalance,
   getAccountInfo,
   getTokenSupply,
   getTokenLargestAccounts,
   getDeployerAddress,
-  getLPMintAddress,
-  getRemainingLPTokens,
-  getLPTotalSupplyAndDeployerBalance,
-  checkDeployerHistory,
+  // getLPMintAddress,
+  // getRemainingLPTokens,
+  // getLPTotalSupplyAndDeployerBalance,
+  // checkDeployerHistory,
   getTokenDetails,
 } from '../helpers';
 import getLpDetails from '../utils/getLpDetails';
@@ -26,38 +26,39 @@ const checkRugPull = async (req: Request, res: Response) => {
     let potentialRug = false;
     let riskScore = 0;
 
-    // let metadata: Metadata, token: Token;
-    //   account,
-    //   largestAccounts,
-    //   deployerAddress,
-    //   lpDetails,
-    //   totalSupply = 0;
-
+    //get token metadata and details
     const { metadata, token } = await getTokenDetails(address);
-    // .then((details) => {
-    //   (metadata = details.metadata), (token = details.token);
-    // });
 
+    // get token account details
     const account = await getAccountInfo([address, { encoding: 'base58' }]);
 
+    // get total supply of token
     const totalSupply = (await getTokenSupply(address)) || 0;
+
+    //determine the largest token holders
     const largestAccounts = await getTokenLargestAccounts(address);
 
+    //get the deployer address
     const deployerAddress = await getDeployerAddress(address);
+
+    // get liquidity pool details
     const lpDetails = await getLpDetails(address);
-
-    const totalTop10 = largestAccounts.slice(10).reduce((sum: number, holder: any) => sum + holder.uiAmount, 0);
-    const topHoldersShare = totalSupply ? parseFloat(((totalTop10 / totalSupply) * 100).toFixed(2)) : null;
-
     const totalMarketLiquidity = lpDetails?.totalMarketLiquidity;
 
-    const currentLpSupply = lpDetails.markets.reduce((sum: number, market: Market) => {
-      return sum + (market?.mint?.lpCurrentSupply || 0);
-    }, 0);
-    const deployerHistory = await checkDeployerHistory(deployerAddress);
+    // get deployer transaction history
+    // const deployerHistory = await checkDeployerHistory(deployerAddress);
 
     // const lpMintAddress = await getLPMintAddress(address, deployerAddress);
     // const remainingLp = await getRemainingLPTokens(address);
+
+    // calculate metrics
+    const totalTop10 = largestAccounts
+      .slice(10)
+      .reduce((sum: number, holder: { uiAmount: number }) => sum + holder.uiAmount, 0);
+    const topHoldersShare = totalSupply ? parseFloat(((totalTop10 / totalSupply) * 100).toFixed(2)) : null;
+    const currentLpSupply = lpDetails.markets.reduce((sum: number, market: Market) => {
+      return sum + (market?.mint?.lpCurrentSupply || 0);
+    }, 0);
 
     // const result = await getLPTotalSupplyAndDeployerBalance(lpMintAddress, deployerAddress);
     // if (result) {
@@ -74,6 +75,7 @@ const checkRugPull = async (req: Request, res: Response) => {
     //   }
     // }
 
+    // calculate riskscore
     if (token?.mintAuthority) {
       riskScore += 10;
       potentialRug = true;
@@ -91,6 +93,8 @@ const checkRugPull = async (req: Request, res: Response) => {
       potentialRug = true;
       reasons.push('All LP tokens are not burnt');
     }
+
+    //send final response
     return res.status(200).json({
       mint: address,
       tokenProgram: account.owner,
@@ -98,10 +102,11 @@ const checkRugPull = async (req: Request, res: Response) => {
       deployer: deployerAddress,
       analysis: {
         potentialRug,
-        riskScoreOutOf100: riskScore,
+        riskScoreOutOf50: riskScore,
         updatedAt: Date.now(),
         reasons,
       },
+      risks: lpDetails.risks,
       metadata,
       supply: totalSupply ? totalSupply.toFixed(2) : null,
       topHoldersShare,

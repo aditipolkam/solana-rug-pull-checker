@@ -12,8 +12,7 @@
 // }
 
 import { PublicKey } from '@solana/web3.js';
-import { getAccount, getAssociatedTokenAddress } from '@solana/spl-token';
-import { connection } from '../config/rpcConnectionConfig';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
 
 async function getLPMintAddress(tokenAccountAddress: string, deployer: string) {
   try {
