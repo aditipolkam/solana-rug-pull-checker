@@ -1,8 +1,8 @@
-import makeRequest from '../utils/makeRequest';
+import makeRPCRequest from '../utils/makeRPCRequest';
 
-const getAccountInfo = async (address: string) => {
-  const params = [address, { encoding: 'base58' }];
-  const result = await makeRequest('getAccountInfo', params);
+const getAccountInfo = async (params: unknown) => {
+  // const params = [address, { encoding: 'base58' }];
+  const result = await makeRPCRequest('getAccountInfo', params);
   if (result && result.result && result.result.value) {
     return result.result.value;
   }

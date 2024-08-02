@@ -7,16 +7,12 @@ async function checkDeployerHistory(deployer: string) {
     const deployerAddress = new PublicKey(deployer);
 
     // Fetch all confirmed transactions for the deployer address
-    const transactions = await connection.getSignaturesForAddress(
-      deployerAddress,
-      { limit: 10 }, // Adjust limit as needed
-    );
-    console.log({ transactions });
+    const transactions = await connection.getSignaturesForAddress(deployerAddress, { limit: 10 });
 
     // Analyze transactions for suspicious patterns
     for (const tx of transactions) {
       const transactionDetails = await getTransaction(tx.signature);
-      console.log({ transactionDetails });
+      // console.log({ transactionDetails: JSON.stringify(transactionDetails) });
       if (transactionDetails) {
         // Check for large token transfers, especially to unknown or new addresses
         // Analyze program instructions for suspicious activity

@@ -1,7 +1,7 @@
-import makeRequest from '../utils/makeRequest';
+import makeRPCRequest from '../utils/makeRPCRequest';
 
 async function getDeployerAddress(tokenMintAddress: string) {
-  const signaturesResponse = await makeRequest('getSignaturesForAddress', [tokenMintAddress, { limit: 1 }]);
+  const signaturesResponse = await makeRPCRequest('getSignaturesForAddress', [tokenMintAddress, { limit: 1 }]);
   if (signaturesResponse.result.length === 0) {
     console.log('No transactions found for this token mint address.');
     return null;
@@ -9,7 +9,7 @@ async function getDeployerAddress(tokenMintAddress: string) {
 
   const firstSignature = signaturesResponse.result[0].signature;
 
-  const transactionResponse = await makeRequest('getTransaction', [
+  const transactionResponse = await makeRPCRequest('getTransaction', [
     firstSignature,
     { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 },
   ]);

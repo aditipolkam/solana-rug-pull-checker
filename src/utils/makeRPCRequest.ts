@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { SOLANA_RPC } from '../config/constants';
 
-async function makeRequest(method: string, params: unknown) {
+async function makeRPCRequest(method: string, params: unknown) {
   try {
     const response = await axios.post(
       SOLANA_RPC,
@@ -22,4 +22,4 @@ async function makeRequest(method: string, params: unknown) {
   }
 }
 
-export default makeRequest;
+export default makeRPCRequest;
