@@ -98,21 +98,21 @@ const checkRugPull = async (req: Request, res: Response) => {
     return res.status(200).json({
       mint: address,
       tokenProgram: account.owner,
-      ...token,
       deployer: deployerAddress,
-      analysis: {
-        potentialRug,
-        riskScoreOutOf50: riskScore,
-        updatedAt: Date.now(),
-        reasons,
+      potentialRug,
+      riskScoreOutOf50: riskScore,
+      updatedAt: Date.now(),
+      reasons,
+      details: {
+        ...token,
+        risks: lpDetails.risks,
+        metadata,
+        supply: totalSupply ? totalSupply.toFixed(2) : null,
+        topHoldersShare,
+        topHolders: largestAccounts,
+        totalMarketLiquidity,
+        currentLpSupply,
       },
-      risks: lpDetails.risks,
-      metadata,
-      supply: totalSupply ? totalSupply.toFixed(2) : null,
-      topHoldersShare,
-      topHolders: largestAccounts,
-      totalMarketLiquidity,
-      currentLpSupply,
     });
   } catch (error) {
     console.error(error);
